@@ -1,0 +1,73 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+
+struct SalesRecord {
+    string month;
+    float amount;
+};
+
+int main() {
+    SalesRecord records[12];
+    float total = 0.0, average;
+
+    cout << "Enter sales data for 12 months:\n";
+    for (int i = 0; i < 12; i++) {
+        cout << "\nEnter month name: ";
+        cin >> records[i].month;
+        cout << "Enter sales amount: ";
+        cin >> records[i].amount;
+        total += records[i].amount;
+    }
+
+    
+    average = total / 12.0;
+
+    
+    ofstream outFile("sales_data.txt");
+    if (!outFile) {
+        cerr << "Error opening file for writing!\n";
+        return 1;
+    }
+
+    for (int i = 0; i < 12; i++) {
+        outFile << records[i].month << " " << records[i].amount << endl;
+    }
+    outFile.close();
+
+    cout << "\nData successfully written to 'sales_data.txt'.\n";
+
+    
+    ifstream inFile("sales_data.txt");
+    if (!inFile) {
+        cerr << "Error opening file for reading!\n";
+        return 1;
+    }
+
+    SalesRecord fileRecords[12];
+    int count = 0;
+    while (inFile >> fileRecords[count].month >> fileRecords[count].amount) {
+        count++;
+    }
+    inFile.close();
+
+    
+    cout << "\n--- Months with Sales Above Yearly Average (" << average << ") ---\n";
+    bool anyAbove = false;
+    for (int i = 0; i < 12; i++) {
+        if (fileRecords[i].amount > average) {
+            cout << fileRecords[i].month << " → " << fileRecords[i].amount << endl;
+            anyAbove = true;
+        }
+    }
+
+    if (!anyAbove)
+        cout << "No months with above-average sales.\n";
+
+    return 0;
+}
+	
+
+	
